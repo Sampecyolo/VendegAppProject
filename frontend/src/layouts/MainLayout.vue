@@ -18,7 +18,7 @@
       <q-scroll-area class="fit">
         <q-list>
           <template v-for="(menuItem, index) in menuList" :key="index">
-            <q-item clickable :active="menuItem.label === 'Outbox'" v-ripple>
+            <q-item clickable :active="menuItem.label === 'Outbox'" v-ripple :to="menuItem.to">
               <q-item-section avatar>
                 <q-icon :name="menuItem.icon" />
               </q-item-section>
@@ -54,25 +54,30 @@ function getMenuList() {
   return [
     {
       icon: 'home',
-      label: 'Főmenű',
+      label: 'Főmenü',
       separator: true,
+      to: '/home', // Ez visz a kezdőlapra
     },
     {
-      icon: 'send',
-      label: 'Outbox',
+      icon: 'bookmarks',
+      label: 'Foglalások',
+      to: '/bookings', // Ez visz az /outbox útvonalra
     },
     {
-      icon: 'drafts',
-      label: 'Drafts',
+      icon: 'people',
+      label: 'Vendégek',
       separator: true,
+      to: '/guests',
     },
     {
       icon: 'delete',
       label: 'Trash',
+      to: '/trash',
     },
     {
       icon: 'report',
       label: 'Spam',
+      to: '/spam',
     },
   ]
 }
