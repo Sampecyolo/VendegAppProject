@@ -11,3 +11,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::apiResource('guests', GuestController::class);
 Route::apiResource('bookings', BookingController::class);
+
+Route::get('/bookings/{id}/guests', [BookingController::class,'getGuests']);
+
+
+

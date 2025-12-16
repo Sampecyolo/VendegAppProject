@@ -16,10 +16,11 @@ class GuestResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'firstName' => $this->firstName, 
+            'firstName' => $this->firstName,
             'lastName' => $this->lastName,
             'fullName' => $this->firstName . ' ' . $this->lastName,
             'phoneNumber' => $this->phoneNumber,
             'address' => $this->address,];
     }
+
 }

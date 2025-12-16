@@ -39,6 +39,18 @@
                 @click="deleteBooking(props.row.id)"
                 icon="delete"
               />
+
+              <table>
+                <tr>
+                  <th>Vendég teljes neve:</th>
+                  <th>Vendég Lakcíme:</th>
+                  <th>Vendég Telefonszáma</th>
+                  <th>Vendég beszélt nyelve</th>
+                </tr>
+                <tr>
+
+                </tr>
+              </table>
             </div>
           </q-td>
         </q-tr>
@@ -107,6 +119,16 @@ const getBookings = async () => {
   }
 }
 
+const getGuestbyBookingId = async (bookingId) => {
+  try {
+    const response = await axios.get(`http://localhost:8000/api/bookings/${bookingId}/guests`)
+    return response.data.data
+  } catch (error) {
+    console.error('Hiba a vendégek lekérésekor:', error)
+    return []
+  }
+}
+
 const deleteBooking = async (id) => {
   if (!confirm('Biztosan szeretnéd törölni a foglalást?')) {
     return
@@ -131,6 +153,10 @@ const deleteBooking = async (id) => {
     })
   }
 }
+
+
+
+
 
 onMounted(() => {
   getBookings()

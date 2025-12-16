@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Resources\BookingResource;
 use App\Models\Booking;
 use Illuminate\Http\Request;
+use App\Models\Guest;
+use App\Http\Resources\GuestResource;
 
 class BookingController extends Controller
 {
@@ -109,4 +111,25 @@ class BookingController extends Controller
         }
 
     }
+
+    public function getGuests(string $id)
+    {
+        try{
+            //Itt a with a modelben a function nevet kell megadni.
+            $booking = Booking::with('guest')->findOrFail($id);
+
+            return response()->json(GuestResource::collection($booking->guest), 200);
+
+        }catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response([
+                'status' => 'ERROR',
+                'error' => '404 not found',
+            ], 404);
+
+        }
+
+
+    }
+
+
 }
