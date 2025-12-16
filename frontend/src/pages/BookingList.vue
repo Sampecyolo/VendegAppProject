@@ -18,8 +18,9 @@
               color="blue"
               round
               dense
-              @click="props.expand = !props.expand"
+              @click="toggleDetails(props)"
               :icon="props.expand ? 'remove' : 'add'"
+              :loading="loadingGuests[props.row.id]"
             />
           </q-td>
 
@@ -45,10 +46,11 @@
                   <th>Vendég teljes neve:</th>
                   <th>Vendég Lakcíme:</th>
                   <th>Vendég Telefonszáma</th>
-                  <th>Vendég beszélt nyelve</th>
                 </tr>
-                <tr>
-
+                <tr v-for="guest in guestsMap[props.row.id]" :key="guest.id">
+                  <td>{{ guest.fullName }}</td>
+                  <td>{{ guest.address }}</td>
+                  <td>{{ guest.phoneNumber }}</td>
                 </tr>
               </table>
             </div>
@@ -100,6 +102,7 @@ const columns = [
 ]
 
 const bookings = ref([])
+const loadingGuests = ref({})
 const getBookings = async () => {
   try {
     const response = await axios.get('http://localhost:8000/api/bookings')
@@ -119,13 +122,32 @@ const getBookings = async () => {
   }
 }
 
-const getGuestbyBookingId = async (bookingId) => {
+const guestsMap = ref({})
+// Ez a függvény kezeli a lenyitást és az adatbetöltést
+const toggleDetails = async (props) => {
+  props.expand = !props.expand // Lenyitás/becsukás állapot váltása
+
+  // Csak akkor kérjük le, ha lenyitjuk ÉS még nincs betöltve az adat ehhez az ID-hoz
+  if (props.expand && !guestsMap.value[props.row.id]) {
+    await getGuestbyBookingId(props.row.id)
+  }
+}
+
+const getGuestbyBookingId = async (id) => {
+  loadingGuests.value[id] = true
   try {
-    const response = await axios.get(`http://localhost:8000/api/bookings/${bookingId}/guests`)
-    return response.data.data
+    // API hívás a foglalás ID-jával
+    // A te példádban ez visszaadja a JSON tömböt (pl. Horvat Szabolcs...)
+    const response = await axios.get(`http://localhost:8000/api/bookings/${id}/guests`)
+
+    // Mentsük el a map-be a foglalás ID-ja alá a kapott tömböt
+    guestsMap.value[id] = response.data // Vagy response.data.data, API-tól függően
+
   } catch (error) {
-    console.error('Hiba a vendégek lekérésekor:', error)
-    return []
+    console.error(`Hiba a vendégek lekérésekor (Booking ID: ${id}):`, error)
+    guestsMap.value[id] = [] // Hiba esetén üres tömb, hogy ne próbálja újra végtelenségig
+  } finally {
+    loadingGuests.value[id] = false
   }
 }
 
