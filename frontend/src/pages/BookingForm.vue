@@ -7,7 +7,14 @@
     <q-card-section>
       <q-form @submit="onSubmit" class="row q-col-gutter-md">
         <div class="col-12 col-md-2">
-          <q-input v-model="form.roomNumber" type="number" label="Szobaszám" outlined dense />
+          <q-select
+            v-model="form.roomNumber"
+            :options="room_number"
+            label="Szobaszám"
+            outlined
+            dense
+            stack-label
+          />
         </div>
         <div class="col-12 col-md-3">
           <q-input
@@ -35,7 +42,7 @@
         <div class="col-12 col-md-2">
           <q-select
             v-model="form.paymentMethod"
-            :options="['cash', 'credit_card']"
+            :options="payment_method"
             label="Fizetés"
             outlined
             dense
@@ -56,8 +63,30 @@
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
+import { useQuasar } from 'quasar'
 
-// Definiáljuk az eseményt, amit a szülő felé küldünk
+const room_number = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+
+const payment_method = ['Készpénz', 'Bankkártya', 'Szépkártya', 'Átutalás', 'Ajándékutalvány']
+
+const $q = useQuasar()
+
+const SuccesfulPost = () => {
+  $q.notify({
+    message: 'Foglalás sikeresen hozzáadva!',
+    caption: 'Az új foglalás megjelenik a listában.',
+    color: 'positive',
+  })
+}
+
+const FailedPost = () => {
+  $q.notify({
+    message: 'Foglalást nem sikerült hozzáadni!',
+    caption: 'Ellenőrizd a megadott adatokat!',
+    color: 'negative',
+  })
+}
+
 const emit = defineEmits(['booking-added'])
 
 const form = ref({
@@ -66,15 +95,13 @@ const form = ref({
   checkOut: '',
   numberOfGuests: 1,
   paid: 0,
-  paymentMethod: 'cash',
+  paymentMethod: '',
 })
 
 const onSubmit = async () => {
   try {
-    // Adatok küldése az API-nak
     await axios.post('http://localhost:8000/api/bookings', form.value)
 
-    // Űrlap alaphelyzetbe állítása
     form.value = {
       roomNumber: '',
       checkIn: '',
@@ -84,10 +111,11 @@ const onSubmit = async () => {
       paymentMethod: 'cash',
     }
 
-    // JELEZZÜK a szülőnek, hogy kész a mentés!
     emit('booking-added')
+    SuccesfulPost()
   } catch (error) {
     console.error('Hiba a mentéskor:', error)
+    FailedPost()
   }
 }
 </script>

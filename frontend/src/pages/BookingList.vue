@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-md">
+  <div flat bordered class="q-pa-md">
     <q-table flat bordered title="Foglalások" :rows="bookings" :columns="columns" row-key="id">
       <template v-slot:header="props">
         <q-tr :props="props">
@@ -11,7 +11,7 @@
       </template>
 
       <template v-slot:body="props">
-        <q-tr :props="props">
+        <q-tr>
           <q-td auto-width>
             <q-btn
               size="sm"
@@ -22,13 +22,14 @@
               :icon="props.expand ? 'remove' : 'add'"
             />
           </q-td>
-          <q-td v-for="col in props.cols" :key="col.name" :props="props">
+          <q-td v-for="col in props.cols" :key="col.name">
             {{ col.value }}
           </q-td>
         </q-tr>
         <q-tr v-show="props.expand" :props="plus">
           <q-td colspan="100%">
-            <div class="text-left">Részletek a szobához: {{ props.row.roomNumber }}</div>
+          
+            <div class="text-left">Részletek a szobához: ASD</div>
           </q-td>
         </q-tr>
       </template>
@@ -39,6 +40,7 @@
 <script setup>
 import axios from 'axios'
 import { ref, onMounted } from 'vue'
+import 
 
 const columns = [
   {

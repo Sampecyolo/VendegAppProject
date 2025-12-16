@@ -10,6 +10,6 @@ import BookingForm from './BookingForm.vue'
 
 const bookingListRef = ref(null)
 const refreshTable = () => {
-  bookingListRef.value.fetchBookings()
+  bookingListRef.value.getBookings()
 }
 </script>
