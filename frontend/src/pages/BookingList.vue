@@ -11,7 +11,7 @@
       </template>
 
       <template v-slot:body="props">
-        <q-tr>
+        <q-tr :props="props">
           <q-td auto-width>
             <q-btn
               size="sm"
@@ -22,14 +22,24 @@
               :icon="props.expand ? 'remove' : 'add'"
             />
           </q-td>
-          <q-td v-for="col in props.cols" :key="col.name">
+
+          <q-td v-for="col in props.cols" :key="col.name" :props="props">
             {{ col.value }}
           </q-td>
         </q-tr>
-        <q-tr v-show="props.expand" :props="plus">
+
+        <q-tr v-show="props.expand" :props="props">
           <q-td colspan="100%">
-          
-            <div class="text-left">Részletek a szobához: ASD</div>
+            <div class="row items-center q-gutter-md">
+              <strong>Műveletek:</strong>
+              <q-btn
+                push
+                color="negative"
+                label="Törlés!"
+                @click="deleteBooking(props.row.id)"
+                icon="delete"
+              />
+            </div>
           </q-td>
         </q-tr>
       </template>
@@ -40,7 +50,8 @@
 <script setup>
 import axios from 'axios'
 import { ref, onMounted } from 'vue'
-import 
+import { useQuasar } from 'quasar'
+const $q = useQuasar()
 
 const columns = [
   {
@@ -93,6 +104,31 @@ const getBookings = async () => {
     }))
   } catch (error) {
     console.error('Hiba a foglalások lekérésekor:', error)
+  }
+}
+
+const deleteBooking = async (id) => {
+  if (!confirm('Biztosan szeretnéd törölni a foglalást?')) {
+    return
+  }
+
+  try {
+    await axios.delete(`http://localhost:8000/api/bookings/${id}`)
+
+    getBookings()
+
+    $q.notify({
+      color: 'positive',
+      message: 'Foglalás sikeresen törölve',
+      icon: 'check',
+    })
+  } catch (error) {
+    console.log('Hiba a törlés közben', error)
+    $q.notify({
+      color: 'negative',
+      message: 'Hiba történt a törlés során',
+      icon: 'report_problem',
+    })
   }
 }
 
