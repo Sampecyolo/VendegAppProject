@@ -6,10 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Guest extends Model
 {
-    protected $fillable = ['firstName', 'lastName', 'phoneNumber', 'address', 'booking_id'];
+    protected $fillable = ['first_name', 'last_name', 'email', 'phone_number',
+     'country', 'zip_code', 'city','address', 'date_of_birth', 'document_number',
+      'nationality', 'notes', 'language', 'source'];
 
-    public function booking()
-    {
-        return $this->belongsTo(Booking::class);
-    }
+
+
+            // Tábla összekötés
+   public function bookings() {
+    return $this->belongsToMany(Booking::class);
+}
 }

@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
-            $table->integer('roomNumber');
-            $table->date('checkIn');
-            $table->date('checkOut');
-            $table->integer('numberOfGuests');
-            $table->integer('paid');
-            $table->string('paymentMethod');
+            $table->date('check_in');
+            $table->date('check_out');
+            $table->integer('room_number'); // Vagy foreignId('room_id') ha van szoba táblád
+            $table->decimal('total_price');
+            $table->text('internal_notes')->nullable(); // Megjegyzés a személyzetnek
+            $table->text('payment_method');
             $table->timestamps();
         });
     }

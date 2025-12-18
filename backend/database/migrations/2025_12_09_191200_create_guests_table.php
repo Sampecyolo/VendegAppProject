@@ -13,11 +13,28 @@ return new class extends Migration
     {
         Schema::create('guests', function (Blueprint $table) {
             $table->id();
-            $table->string('firstName');
-            $table->string('lastName');
-            $table->string('phoneNumber');
+            //Alap dolgok
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('email')->nullable();
+            $table->string('phone_number');
+
+            //Személyes dolgok
+            $table->string('country')->nullable();
+            $table->string('zip_code')->nullable();
+            $table->string('city')->nullable();
             $table->string('address');
-            $table->foreignId('booking_id')->constrained('bookings')->onDelete('cascade');
+
+            //Jogi, személyesebb dolgok
+            $table->date('date_of_birth')->nullable();
+            $table->string('document_number')->nullable();
+            $table->string('nationality')->nullable();
+            // Egyéb dolgok
+            $table->text('notes')->nullable();
+            $table->string('language')->nullable();
+
+            $table->string('source')->nullable();
+            // Tábla összekötés
             $table->timestamps();
         });
     }

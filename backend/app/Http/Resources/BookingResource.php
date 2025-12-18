@@ -15,13 +15,12 @@ class BookingResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'roomNumber' => $this->roomNumber,
-            'checkIn' => $this->checkIn,
-            'checkOut' => $this->checkOut,
-            'numberOfGuests' => $this->numberOfGuests,
-            'paid' => $this->paid,
-            'paymentMethod' => $this->paymentMethod
+            'checkIn' => $this->check_in,
+            'checkOut' => $this->check_out,
+            'roomNumber' => $this->room_number,
+            'totalPrice' => $this->total_price,
+            'internalNotes' => $this->internal_notes,
+            'paymentMethod' => $this->payment_method
         ];
     }
 }

@@ -123,7 +123,6 @@ const getBookings = async () => {
 }
 
 const guestsMap = ref({})
-// Ez a függvény kezeli a lenyitást és az adatbetöltést
 const toggleDetails = async (props) => {
   props.expand = !props.expand // Lenyitás/becsukás állapot váltása
 
@@ -142,7 +141,6 @@ const getGuestbyBookingId = async (id) => {
 
     // Mentsük el a map-be a foglalás ID-ja alá a kapott tömböt
     guestsMap.value[id] = response.data // Vagy response.data.data, API-tól függően
-
   } catch (error) {
     console.error(`Hiba a vendégek lekérésekor (Booking ID: ${id}):`, error)
     guestsMap.value[id] = [] // Hiba esetén üres tömb, hogy ne próbálja újra végtelenségig
@@ -175,10 +173,6 @@ const deleteBooking = async (id) => {
     })
   }
 }
-
-
-
-
 
 onMounted(() => {
   getBookings()

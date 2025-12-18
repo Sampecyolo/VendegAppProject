@@ -2,32 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\BookingResource;
 use App\Models\Booking;
 use Illuminate\Http\Request;
-use App\Models\Guest;
-use App\Http\Resources\GuestResource;
+use App\Http\Resources\BookingResource;
 
 class BookingController extends Controller
 {
-    public $validacio = [
-        'roomNumber' => 'required|integer',
-        'checkIn' => 'required|date',
-        'checkOut' => 'required|date',
-        'numberOfGuests' => 'required|integer',
-        'paid' => 'required|integer',
-        'paymentMethod' => 'required|string',
-
-    ];
+    public $validacio =
+        [
+            'check_in' => 'required|date|after_or_equal:2025-01-01',
+            'check_out' => 'required|date',
+            'room_number' => 'required|integer',
+            'total_price' => 'required|integer',
+            'internal_notes' => 'required|string',
+            'payment_method' => 'required|string',
+        ];
 
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $booking = Booking::all();
+        try {
+            //Leellenörzi, hogy jók, és helyes adatok vannak e megadava.
+            $booking = Booking::all();
+            //Visszaadja az értékeket.
+            return response()->json(BookingResource::collection($booking));
 
-        return BookingResource::collection($booking);
+        } catch (\Throwable $th) {
+            //Visszadja a hibát, ha hiba van.
+            return response()->json($th->getMessage(), 422);
+
+        }
     }
 
     /**
@@ -35,11 +41,22 @@ class BookingController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate($this->validacio);
 
-        $booking = Booking::create($validated);
+        try {
+            //Leellenörzi, hogy jók, és helyes adatok vannak e megadava.
+            $validated = $request->validate($this->validacio);
 
-        return response()->json('Sikeres!', 201);
+            //Létrehozza a modellt-foglalást.
+            $booking = Booking::create($validated);
+
+            //Válaszol, hogy sikeres művelet, és ad egy 201 es kódot.
+            return response()->json($booking, 201);
+
+        } catch (\Throwable $th) {
+
+            //Visszadja a hibát, ha hiba van.
+            return response()->json($th->getMessage(), 422);
+        }
 
     }
 
@@ -48,20 +65,17 @@ class BookingController extends Controller
      */
     public function show(string $id)
     {
-
         try {
-            $booking = Booking::findorfail($id);
+            //Lekéri az adatokat.
+            $booking = Booking::findOrFail($id);
+            //Visszaad csak egy értéket.
+            return response()->json($booking->toResource(BookingResource::class));
 
-            return new BookingResource($booking);
-
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response([
-                'status' => 'ERROR',
-                'error' => '404 not found',
-            ], 404);
+        } catch (\Throwable $th) {
+            //Visszadja a hibát, ha hiba van.
+            return response()->json($th->getMessage(), 422);
 
         }
-
     }
 
     /**
@@ -69,24 +83,25 @@ class BookingController extends Controller
      */
     public function update(Request $request, string $id)
     {
-
-        try {
+         try {
+            //Ugyan ugy validalja
             $validated = $request->validate($this->validacio);
 
+            //Megkeresi a folalast id-alapján
             $booking = Booking::findOrFail($id);
 
+            //A meglévő lekérdezett foglalást, atírja a kapott, validalt infora.
             $booking->update($validated);
 
+            //Visszaadja, hogy sikeres volt a művelet!
             return response()->json('Sikeres!', 201);
 
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response([
-                'status' => 'ERROR',
-                'error' => '404 not found',
-            ], 404);
 
+        } catch (\Throwable $th) {
+
+            //Visszaadja a hibát.
+            return response()->json($th,404);
         }
-
     }
 
     /**
@@ -94,42 +109,7 @@ class BookingController extends Controller
      */
     public function destroy(string $id)
     {
-
-        try {
-            $booking = Booking::findOrFail($id);
-
-            $booking->delete();
-
-            return response()->json('Deleted', 200);
-
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response([
-                'status' => 'ERROR',
-                'error' => '404 not found',
-            ], 404);
-
-        }
-
+        Booking::FindOrFail($id)->delete();
+        return response()->json('Deleted', 200);
     }
-
-    public function getGuests(string $id)
-    {
-        try{
-            //Itt a with a modelben a function nevet kell megadni.
-            $booking = Booking::with('guest')->findOrFail($id);
-
-            return response()->json(GuestResource::collection($booking->guest), 200);
-
-        }catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response([
-                'status' => 'ERROR',
-                'error' => '404 not found',
-            ], 404);
-
-        }
-
-
-    }
-
-
 }

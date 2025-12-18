@@ -7,15 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 class Booking extends Model
 {
     protected $fillable = [
-        'roomNumber',
-        'checkIn',
-        'checkOut',
-        'numberOfGuests',
-        'paid',
-        'paymentMethod',
+        'check_in',
+        'check_out',
+        'room_number',
+        'total_price',
+        'internal_notes',
+        'payment_method',
     ];
 
-    public function guest(){
-        return $this->hasMany(Guest::class);
+
+    public function guests()
+    {
+        return $this->belongsToMany(Guest::class);
     }
 }
